@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(dotnet dump *)",
+      "Bash(npx vue-tsc *)",
+      "Bash(cat)",
+      "Bash(dotnet script *)",
+      "Read(//d/tmp/genhash/GenHash/**)"
+    ]
+  }
+}

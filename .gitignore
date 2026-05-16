@@ -1,0 +1,23 @@
+# Build
+aspnet-core/**/bin/
+aspnet-core/**/obj/
+vue/dist/
+vue/node_modules/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+*.secret
+appsettings.*.local.json
+
+# Logs
+*.log

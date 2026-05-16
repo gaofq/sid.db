@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx vite *)",
+      "Bash(dotnet run *)",
+      "Bash(dotnet ef *)",
+      "Bash(ls -la /mnt/d/GitFolder/sid.db/ 2>/dev/null || ls -la \"d:/GitFolder/sid.db/\" 2>/dev/null || ls -la /d/GitFolder/sid.db/ 2>/dev/null)",
+      "Read(//mnt/d/GitFolder/**)",
+      "Skill(superpowers:systematic-debugging)",
+      "Skill(superpowers:systematic-debugging:*)",
+      "Bash(taskkill /F /IM MSBuild.exe)",
+      "Bash(taskkill /F /IM dotnet.exe)",
+      "Bash(dotnet build-server *)",
+      "Bash(powershell.exe -Command 'Get-Process | ForEach-Object { try { $modules = $_.Modules | Where-Object { $_.FileName -like \"*Sid.DbFieldManager*\" }; if \\($modules\\) { Write-Host \"PID: $\\($_.Id\\) Name: $\\($_.ProcessName\\)\"; foreach \\($m in $modules\\) { Write-Host \"  $\\($m.FileName\\)\" } } } catch {} }')",
+      "Bash(powershell.exe -ExecutionPolicy Bypass -File build.ps1)",
+      "Bash(dotnet --list-runtimes)",
+      "Bash(find \"C:/Users/高较瘦/.nuget/packages/volo.abp.mapperly\" -name \"*.dll\" -type f 2>/dev/null | head -5)",
+      "Read(//c/Users/高较瘦/.nuget/packages/volo.abp.mapperly/**)",
+      "Bash(dotnet \"C:/Users/高较瘦/.nuget/packages/ilspycmd/9.2.0.7890/tools/net9.0/ilspycmd.dll\" \"C:/Users/高较瘦/.nuget/packages/volo.abp.mapperly/10.3.0/lib/net10.0/Volo.Abp.Mapperly.dll\" -o /tmp/abp-mapperly-source)",
+      "Read(//tmp/**)",
+      "Bash(sqlcmd -S \"192.168.31.167,1433\" -U sa -P \"Aa.123123\" -d \"DbFieldManager\" -i /d/tmp/insert_admin.sql)",
+      "Bash(sqlcmd -S 192.168.31.167,1433 -U sa -P Aa.123123 -d DbFieldManager -Q ' *)",
+      "Bash(sqlcmd -S \"192.168.31.167,1433\" -U sa -P \"Aa.123123\" -d \"DbFieldManager\" -Q \"SELECT COLUMN_NAME, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'AbpUsers' ORDER BY ORDINAL_POSITION;\")",
+      "Bash(sqlcmd -S \"192.168.31.167,1433\" -U sa -P \"Aa.123123\" -d \"DbFieldManager\" -Q \"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'AbpRoles' ORDER BY ORDINAL_POSITION;\")"
+    ]
+  }
+}

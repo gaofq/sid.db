@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Sid.DbFieldManager.Application.Contracts/Sid.DbFieldManager.Application.Contracts.csproj" />
+    <Project Path="src/Sid.DbFieldManager.Application/Sid.DbFieldManager.Application.csproj" />
+    <Project Path="src/Sid.DbFieldManager.DbMigrator/Sid.DbFieldManager.DbMigrator.csproj" />
+    <Project Path="src/Sid.DbFieldManager.Domain.Shared/Sid.DbFieldManager.Domain.Shared.csproj" />
+    <Project Path="src/Sid.DbFieldManager.Domain/Sid.DbFieldManager.Domain.csproj" />
+    <Project Path="src/Sid.DbFieldManager.EntityFrameworkCore/Sid.DbFieldManager.EntityFrameworkCore.csproj" />
+    <Project Path="src/Sid.DbFieldManager.HttpApi.Client/Sid.DbFieldManager.HttpApi.Client.csproj" />
+    <Project Path="src/Sid.DbFieldManager.HttpApi.Host/Sid.DbFieldManager.HttpApi.Host.csproj" />
+    <Project Path="src/Sid.DbFieldManager.HttpApi/Sid.DbFieldManager.HttpApi.csproj" />
+  </Folder>
+</Solution>

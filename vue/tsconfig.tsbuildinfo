@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/api/db-field.ts","./src/api/db-table.ts","./src/api/index.ts","./src/api/target-database.ts","./src/router/index.ts","./src/app.vue","./src/views/databases/index.vue","./src/views/execution-logs/index.vue","./src/views/fields/index.vue","./src/views/tables/index.vue","./env.d.ts"],"version":"5.7.3"}

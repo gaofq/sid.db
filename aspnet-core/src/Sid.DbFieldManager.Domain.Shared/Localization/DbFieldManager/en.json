@@ -1,0 +1,18 @@
+{
+  "culture": "en",
+  "texts": {
+    "AppName": "DbFieldManager",
+    "Menu:Home": "Home",
+    "Welcome": "Welcome",
+    "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information, visit abp.io.",
+    "DbFieldManager": "Database Field Manager",
+    "TargetDatabases": "Target Databases",
+    "DbTables": "Database Tables",
+    "DbFields": "Database Fields",
+    "SqlGeneration": "SQL Generation",
+    "SqlExecution": "SQL Execution",
+    "Create": "Create",
+    "Update": "Update",
+    "Delete": "Delete"
+  }
+}

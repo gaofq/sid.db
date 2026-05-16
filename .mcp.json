@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "dbhub-sqlserver-beteng_kf-193": {
+      "url": "http://192.168.1.230:8082/mcp"
+    }
+  }
+}

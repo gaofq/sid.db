@@ -1,0 +1,18 @@
+{
+  "culture": "zh-Hans",
+  "texts": {
+    "AppName": "数据库字段管理器",
+    "Menu:Home": "首页",
+    "Welcome": "欢迎",
+    "LongWelcomeMessage": "欢迎使用数据库字段管理系统。基于 ABP 框架构建。",
+    "DbFieldManager": "数据库字段管理",
+    "TargetDatabases": "目标数据库",
+    "DbTables": "数据表管理",
+    "DbFields": "字段管理",
+    "SqlGeneration": "SQL生成",
+    "SqlExecution": "SQL执行",
+    "Create": "新建",
+    "Update": "编辑",
+    "Delete": "删除"
+  }
+}
