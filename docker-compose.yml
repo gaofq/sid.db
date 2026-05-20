@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: ./aspnet-core
+      dockerfile: Dockerfile
+    container_name: dbfm-backend
+    ports:
+      - "8090:8090"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Default=Server=host.docker.internal,1433;Database=DbFieldManager;User Id=sa;Password=Aa.123123;TrustServerCertificate=true
+      - App__SelfUrl=http://localhost:8090
+      - App__CorsOrigins=http://localhost:8091
+      - AuthServer__Authority=http://localhost:8090
+      - AuthServer__RequireHttpsMetadata=false
+      - StringEncryption__DefaultPassPhrase=${STRING_ENCRYPT_PASSPHRASE:-xLUxRRN16IANIM4W}
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build:
+      context: ./vue
+      dockerfile: Dockerfile
+    container_name: dbfm-frontend
+    ports:
+      - "8091:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
