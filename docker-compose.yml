@@ -30,7 +30,6 @@ services:
     volumes:
       # 挂载宿主机时区文件，让容器时间和宿主机完全同步（Linux下生效，Windows下可注释）
       - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
     extra_hosts:
       # 【仅Linux系统需要】容器内部域名解析：host.docker.internal → 宿主机IP，让容器可以访问宿主机上的服务（比如SQL Server）
       # Windows/Mac版Docker Desktop默认支持该解析，不需要可以注释掉
@@ -52,4 +51,3 @@ services:
     volumes:
       # 同步宿主机时区
       - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
