@@ -73,6 +73,12 @@ public class DbFieldManagerHttpApiHostModule : AbpModule
         ConfigureCors(context, configuration);
         ConfigureSwaggerServices(context, configuration);
         ConfigureAntiForgery(context);
+        
+        // 关闭ABP客户端库检查：前后端分离项目纯API服务，不需要MVC相关的客户端库
+        Configure<Volo.Abp.AspNetCore.Mvc.UI.AbpMvcLibsOptions>(options =>
+        {
+            options.CheckLibs = false;
+        });
     }
 
     private void ConfigureAntiForgery(ServiceConfigurationContext context)
