@@ -25,6 +25,12 @@ services:
       # 字符串加密默认密钥，建议生产环境自定义，支持从.env文件读取STRING_ENCRYPT_PASSPHRASE变量
       - StringEncryption__DefaultPassPhrase=${STRING_ENCRYPT_PASSPHRASE:-xLUxRRN16IANIM4W}
     restart: unless-stopped  # 容器重启策略：异常退出自动重启，手动停止则不重启
+    environment:
+      - TZ=Asia/Shanghai  # 设置时区为北京时间，解决日志时间差8小时问题
+    volumes:
+      # 挂载宿主机时区文件，让容器时间和宿主机完全同步（Linux下生效，Windows下可注释）
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     extra_hosts:
       # 【仅Linux系统需要】容器内部域名解析：host.docker.internal → 宿主机IP，让容器可以访问宿主机上的服务（比如SQL Server）
       # Windows/Mac版Docker Desktop默认支持该解析，不需要可以注释掉
@@ -41,3 +47,9 @@ services:
     depends_on:
       - backend  # 依赖关系：先启动backend服务，再启动前端服务
     restart: unless-stopped  # 容器重启策略，同后端
+    environment:
+      - TZ=Asia/Shanghai  # 设置时区为北京时间
+    volumes:
+      # 同步宿主机时区
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
