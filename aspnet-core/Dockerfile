@@ -46,6 +46,9 @@ ENV ASPNETCORE_URLS=http://+:8090
 # 从构建阶段复制发布好的程序文件
 COPY --from=build /app .
 
+# ABP框架会检查wwwroot/libs目录是否存在客户端库，纯API项目不需要这些库，创建空目录绕过检查
+RUN mkdir -p /app/wwwroot/libs
+
 # 使用非root用户运行，提升容器安全性
 USER $APP_UID
 # 容器启动入口，运行后端服务
