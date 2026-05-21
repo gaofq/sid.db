@@ -1,6 +1,24 @@
 version: '3.8'  # Docker Compose配置文件版本，兼容Docker 20.10+
 
 services:
+  # SQL Server 2022 数据库服务（最新稳定版，无TLS兼容问题）
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: dbfm-sqlserver
+    ports:
+      - "1433:1433"  # 端口映射：宿主机1433 → 容器内1433，外部工具可以直接连接
+    environment:
+      - ACCEPT_EULA=Y  # 必须接受许可协议才能启动
+      - SA_PASSWORD=Fkh6G2B4s73N@2024  # SA账号密码，要求至少8位，包含大小写字母+数字+特殊字符
+      - MSSQL_PID=Developer  # 版本：Developer是免费开发版，功能和企业版完全一致，生产环境可以改成Enterprise
+      - TZ=Asia/Shanghai  # 时区设置为北京时间
+    volumes:
+      # 数据库数据持久化：把容器内的数据库文件挂载到宿主机，容器删除数据不会丢失
+      - sqlserver_data:/var/opt/mssql
+      # 同步宿主机时区
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped  # 自动重启
+
   # 后端API服务（.NET 10 + ABP框架）
   backend:
     build:
@@ -12,8 +30,8 @@ services:
     environment:
       # .NET运行环境：Production生产环境 / Development开发环境
       - ASPNETCORE_ENVIRONMENT=Production
-      # 数据库连接字符串：SQL Server地址、数据库名、账号密码，支持从.env文件读取DB_CONNECTION变量
-      - ConnectionStrings__Default=Server=192.168.1.232,1433;Database=DbFieldManager;User Id=sa;Password=Fkh6G2B4s73N;Encrypt=false;TrustServerCertificate=true;
+      # 数据库连接字符串：直接用docker内部服务名sqlserver访问数据库，不需要填IP
+      - ConnectionStrings__Default=Server=sqlserver,1433;Database=DbFieldManager;User Id=sa;Password=Fkh6G2B4s73N@2024;Encrypt=Optional;TrustServerCertificate=true;
       # 后端服务自身访问地址，用于生成链接和跨域校验
       - App__SelfUrl=http://localhost:8090
       # 允许跨域的前端地址，多个地址用逗号分隔，比如http://localhost:8091,https://your-domain.com
@@ -26,19 +44,12 @@ services:
       - StringEncryption__DefaultPassPhrase=${STRING_ENCRYPT_PASSPHRASE:-xLUxRRN16IANIM4W}
       # 设置时区为北京时间，解决日志时间差8小时问题
       - TZ=Asia/Shanghai
-      # 兼容旧版SQL Server的TLS协议：.NET默认禁用TLS1.0/1.1，旧版SQL Server只支持旧协议，这里开启允许
-      - DOTNET_SYSTEM_NET_SECURITY_DISABLETLS10=false
-      - DOTNET_SYSTEM_NET_SECURITY_DISABLETLS11=false
-      # 强制SSL校验不检查证书吊销，避免旧版SQL Server证书问题导致连接失败
-      - DOTNET_SYSTEM_NET_SECURITY_USECRLCHECK=false
+    depends_on:
+      - sqlserver  # 先启动数据库再启动后端
     restart: unless-stopped  # 容器重启策略：异常退出自动重启，手动停止则不重启
     volumes:
       # 挂载宿主机时区文件，让容器时间和宿主机完全同步（Linux下生效，Windows下可注释）
       - /etc/localtime:/etc/localtime:ro
-    extra_hosts:
-      # 【仅Linux系统需要】容器内部域名解析：host.docker.internal → 宿主机IP，让容器可以访问宿主机上的服务（比如SQL Server）
-      # Windows/Mac版Docker Desktop默认支持该解析，不需要可以注释掉
-      - "host.docker.internal:host-gateway"
 
   # 前端Web服务（Vue 3 + Nginx）
   frontend:
@@ -56,3 +67,7 @@ services:
     volumes:
       # 同步宿主机时区
       - /etc/localtime:/etc/localtime:ro
+
+# 全局命名卷声明：数据持久化专用，docker自动管理存储位置
+volumes:
+  sqlserver_data:
