@@ -24,8 +24,6 @@ services:
       - AuthServer__RequireHttpsMetadata=false
       # 字符串加密默认密钥，建议生产环境自定义，支持从.env文件读取STRING_ENCRYPT_PASSPHRASE变量
       - StringEncryption__DefaultPassPhrase=${STRING_ENCRYPT_PASSPHRASE:-xLUxRRN16IANIM4W}
-      # 关闭ABP客户端库检查：前后端分离纯API项目不需要MVC前端依赖库检查
-      - Abp__MvcLibs__CheckLibs=false
     restart: unless-stopped  # 容器重启策略：异常退出自动重启，手动停止则不重启
     extra_hosts:
       # 【仅Linux系统需要】容器内部域名解析：host.docker.internal → 宿主机IP，让容器可以访问宿主机上的服务（比如SQL Server）
