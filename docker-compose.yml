@@ -24,9 +24,9 @@ services:
       - AuthServer__RequireHttpsMetadata=false
       # 字符串加密默认密钥，建议生产环境自定义，支持从.env文件读取STRING_ENCRYPT_PASSPHRASE变量
       - StringEncryption__DefaultPassPhrase=${STRING_ENCRYPT_PASSPHRASE:-xLUxRRN16IANIM4W}
+      # 设置时区为北京时间，解决日志时间差8小时问题
+      - TZ=Asia/Shanghai
     restart: unless-stopped  # 容器重启策略：异常退出自动重启，手动停止则不重启
-    environment:
-      - TZ=Asia/Shanghai  # 设置时区为北京时间，解决日志时间差8小时问题
     volumes:
       # 挂载宿主机时区文件，让容器时间和宿主机完全同步（Linux下生效，Windows下可注释）
       - /etc/localtime:/etc/localtime:ro
