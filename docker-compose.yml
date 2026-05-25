@@ -22,8 +22,9 @@ services:
           cpus: '1'  # 至少保证1个核心
           memory: 1G  # 至少保证1G内存
     volumes:
-      # 数据库数据持久化：把容器内的数据库文件挂载到宿主机，容器删除数据不会丢失
-      - sqlserver_data:/var/opt/mssql
+      # 数据库数据持久化：使用宿主机目录挂载，避免命名卷权限问题
+      - ./sqlserver_data/data:/var/opt/mssql/data
+      - ./sqlserver_data/log:/var/opt/mssql/log
       # 同步宿主机时区
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped  # 自动重启
@@ -77,6 +78,5 @@ services:
       # 同步宿主机时区
       - /etc/localtime:/etc/localtime:ro
 
-# 全局命名卷声明：数据持久化专用，docker自动管理存储位置
-volumes:
-  sqlserver_data:
+# 全局命名卷声明
+volumes: {}
