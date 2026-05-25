@@ -12,6 +12,15 @@ services:
       - SA_PASSWORD=Fkh6G2B4s73N@2024  # SA账号密码，要求至少8位，包含大小写字母+数字+特殊字符
       - MSSQL_PID=Developer  # 版本：Developer是免费开发版，功能和企业版完全一致，生产环境可以改成Enterprise
       - TZ=Asia/Shanghai  # 时区设置为北京时间
+      - MSSQL_MEMORY_LIMIT_MB=2048  # 限制SQL Server最大使用2G内存，避免榨干服务器
+    deploy:
+      resources:
+        limits:
+          cpus: '2'  # 最多用2个CPU核心
+          memory: 3G  # 最多用3G内存
+        reservations:
+          cpus: '1'  # 至少保证1个核心
+          memory: 1G  # 至少保证1G内存
     volumes:
       # 数据库数据持久化：把容器内的数据库文件挂载到宿主机，容器删除数据不会丢失
       - sqlserver_data:/var/opt/mssql
