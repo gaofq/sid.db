@@ -31,6 +31,12 @@ RUN dotnet publish src/Sid.DbFieldManager.HttpApi.Host/Sid.DbFieldManager.HttpAp
     -o /app \
     --no-restore
 
+# 同时发布数据库迁移工具到/app/db-migrator目录
+RUN dotnet publish src/Sid.DbFieldManager.DbMigrator/Sid.DbFieldManager.DbMigrator.csproj \
+    -c Release \
+    -o /app/db-migrator \
+    --no-restore
+
 # 运行阶段，使用更小的ASP.NET Core Runtime镜像
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 # 设置工作目录为/app
