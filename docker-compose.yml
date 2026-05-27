@@ -10,21 +10,12 @@ services:
     environment:
       - ACCEPT_EULA=Y  # 必须接受许可协议才能启动
       - SA_PASSWORD=Fkh6G2B4s73N@2024  # SA账号密码，要求至少8位，包含大小写字母+数字+特殊字符
-      - MSSQL_PID=Developer  # 版本：Developer是免费开发版，功能和企业版完全一致，生产环境可以改成Enterprise
+      - MSSQL_PID=Developer  # 版本：Developer是免费开发版，功能和企业版完全一致
       - TZ=Asia/Shanghai  # 时区设置为北京时间
-      - MSSQL_MEMORY_LIMIT_MB=2048  # 限制SQL Server最大使用2G内存，避免榨干服务器
-    deploy:
-      resources:
-        limits:
-          cpus: '2'  # 最多用2个CPU核心
-          memory: 3G  # 最多用3G内存
-        reservations:
-          cpus: '1'  # 至少保证1个核心
-          memory: 1G  # 至少保证1G内存
+    user: root  # 临时用root启动解决权限问题，首次初始化完成后可以删掉这行
     volumes:
-      # 数据库数据持久化：全新命名卷，避开旧卷权限问题
-      - sqlserver2019_data:/var/opt/mssql/data
-      - sqlserver2019_log:/var/opt/mssql/log
+      # 挂载整个数据目录，首次启动Docker会自动创建并赋予正确权限
+      - sqlserver2019_data:/var/opt/mssql
     restart: unless-stopped  # 自动重启
 
   # 后端API服务（.NET 10 + ABP框架）
@@ -79,4 +70,3 @@ services:
 # 全局命名卷声明
 volumes:
   sqlserver2019_data:
-  sqlserver2019_log:
