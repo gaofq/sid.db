@@ -19,8 +19,9 @@ COPY src/Sid.DbFieldManager.HttpApi.Host/Sid.DbFieldManager.HttpApi.Host.csproj 
 COPY src/Sid.DbFieldManager.HttpApi.Client/Sid.DbFieldManager.HttpApi.Client.csproj src/Sid.DbFieldManager.HttpApi.Client/
 COPY src/Sid.DbFieldManager.DbMigrator/Sid.DbFieldManager.DbMigrator.csproj src/Sid.DbFieldManager.DbMigrator/
 
-# 还原NuGet依赖包
+# 还原NuGet依赖包（Host和DbMigrator都需要）
 RUN dotnet restore src/Sid.DbFieldManager.HttpApi.Host/Sid.DbFieldManager.HttpApi.Host.csproj
+RUN dotnet restore src/Sid.DbFieldManager.DbMigrator/Sid.DbFieldManager.DbMigrator.csproj
 
 # 复制所有源代码
 COPY . .
