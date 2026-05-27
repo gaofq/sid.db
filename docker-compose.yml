@@ -22,11 +22,9 @@ services:
           cpus: '1'  # 至少保证1个核心
           memory: 1G  # 至少保证1G内存
     volumes:
-      # 数据库数据持久化：使用宿主机目录挂载，避免命名卷权限问题
-      - ./sqlserver_data/data:/var/opt/mssql/data
-      - ./sqlserver_data/log:/var/opt/mssql/log
-      # 同步宿主机时区
-      - /etc/localtime:/etc/localtime:ro
+      # 数据库数据持久化：全新命名卷，避开旧卷权限问题
+      - sqlserver2019_data:/var/opt/mssql/data
+      - sqlserver2019_log:/var/opt/mssql/log
     restart: unless-stopped  # 自动重启
 
   # 后端API服务（.NET 10 + ABP框架）
@@ -79,4 +77,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
 
 # 全局命名卷声明
-volumes: {}
+volumes:
+  sqlserver2019_data:
+  sqlserver2019_log:
