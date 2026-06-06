@@ -86,7 +86,8 @@ public class DbFieldManagerDbContext :
             b.HasOne(x => x.TargetDatabase)
              .WithMany(x => x.Tables)
              .HasForeignKey(x => x.TargetDatabaseId)
-             .OnDelete(DeleteBehavior.Cascade);
+             .IsRequired(false)
+             .OnDelete(DeleteBehavior.SetNull);
             b.HasMany(x => x.Fields)
              .WithOne(x => x.DbTable)
              .HasForeignKey(x => x.DbTableId)

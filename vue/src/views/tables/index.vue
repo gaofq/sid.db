@@ -169,6 +169,7 @@ async function handleSave() {
   try {
     if (editingId.value) {
       await dbTableApi.update(editingId.value, {
+        targetDatabaseId: form.targetDatabaseId ? form.targetDatabaseId : null,
         name: form.name,
         displayName: form.displayName,
         schema: form.schema,
