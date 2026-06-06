@@ -8,6 +8,8 @@ namespace Sid.DbFieldManager.DbFields;
 public class DbFieldDto : FullAuditedEntityDto<Guid>
 {
     public Guid DbTableId { get; set; }
+    public Guid? TargetDatabaseId { get; set; }
+    public string TargetDatabaseName { get; set; }
     public string TableName { get; set; }
     public string Name { get; set; }
     public string SqlType { get; set; }
@@ -24,6 +26,8 @@ public class CreateDbFieldDto
 {
     [Required]
     public Guid DbTableId { get; set; }
+
+    public Guid? TargetDatabaseId { get; set; }
 
     [Required]
     [MaxLength(128)]
@@ -47,6 +51,8 @@ public class CreateDbFieldDto
 
 public class UpdateDbFieldDto
 {
+    public Guid? TargetDatabaseId { get; set; }
+
     [Required]
     [MaxLength(128)]
     public string Name { get; set; }

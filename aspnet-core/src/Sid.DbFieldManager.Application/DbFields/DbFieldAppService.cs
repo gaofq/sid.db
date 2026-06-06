@@ -18,9 +18,14 @@ public class DbFieldAppService :
         UpdateDbFieldDto>,
     IDbFieldAppService
 {
-    public DbFieldAppService(IRepository<DbField, Guid> repository)
+    private readonly IRepository<TargetDatabases.TargetDatabase, Guid> _targetDbRepo;
+
+    public DbFieldAppService(
+        IRepository<DbField, Guid> repository,
+        IRepository<TargetDatabases.TargetDatabase, Guid> targetDbRepo)
         : base(repository)
     {
+        _targetDbRepo = targetDbRepo;
     }
 
     protected override async Task<IQueryable<DbField>> CreateFilteredQueryAsync(DbFieldGetListInput input)
@@ -64,9 +69,19 @@ public class DbFieldAppService :
 
     public override async Task<DbFieldDto> CreateAsync(CreateDbFieldDto input)
     {
+        if (input.TargetDatabaseId.HasValue)
+        {
+            var targetDbExists = await _targetDbRepo.AnyAsync(d => d.Id == input.TargetDatabaseId.Value);
+            if (!targetDbExists)
+            {
+                throw new Volo.Abp.Validation.AbpValidationException("指定的目标数据库不存在");
+            }
+        }
+
         var entity = new DbField
         {
             DbTableId = input.DbTableId,
+            TargetDatabaseId = input.TargetDatabaseId,
             Name = input.Name,
             SqlType = input.SqlType,
             IsNullable = input.IsNullable,
@@ -76,12 +91,23 @@ public class DbFieldAppService :
             SortOrder = input.SortOrder
         };
         entity = await Repository.InsertAsync(entity, autoSave: true);
-        return MapToGetOutputDto(entity);
+        return await MapToGetOutputDtoAsync(entity);
     }
 
     public override async Task<DbFieldDto> UpdateAsync(Guid id, UpdateDbFieldDto input)
     {
         var entity = await Repository.GetAsync(id);
+
+        if (input.TargetDatabaseId.HasValue)
+        {
+            var targetDbExists = await _targetDbRepo.AnyAsync(d => d.Id == input.TargetDatabaseId.Value);
+            if (!targetDbExists)
+            {
+                throw new Volo.Abp.Validation.AbpValidationException("指定的目标数据库不存在");
+            }
+        }
+
+        entity.TargetDatabaseId = input.TargetDatabaseId;
         entity.Name = input.Name;
         entity.SqlType = input.SqlType;
         entity.IsNullable = input.IsNullable;
@@ -90,7 +116,7 @@ public class DbFieldAppService :
         entity.Description = input.Description;
         entity.SortOrder = input.SortOrder;
         entity = await Repository.UpdateAsync(entity, autoSave: true);
-        return MapToGetOutputDto(entity);
+        return await MapToGetOutputDtoAsync(entity);
     }
 
     public override Task DeleteAsync(Guid id)
@@ -98,12 +124,13 @@ public class DbFieldAppService :
         return base.DeleteAsync(id);
     }
 
-    protected override DbFieldDto MapToGetOutputDto(DbField entity)
+    protected override async Task<DbFieldDto> MapToGetOutputDtoAsync(DbField entity)
     {
-        return new DbFieldDto
+        var dto = new DbFieldDto
         {
             Id = entity.Id,
             DbTableId = entity.DbTableId,
+            TargetDatabaseId = entity.TargetDatabaseId,
             Name = entity.Name,
             SqlType = entity.SqlType,
             IsNullable = entity.IsNullable,
@@ -121,6 +148,18 @@ public class DbFieldAppService :
             DeleterId = entity.DeleterId,
             IsDeleted = entity.IsDeleted
         };
+
+        if (entity.TargetDatabase != null)
+        {
+            dto.TargetDatabaseName = entity.TargetDatabase.Name;
+        }
+        else if (entity.TargetDatabaseId.HasValue)
+        {
+            var targetDb = await _targetDbRepo.FindAsync(d => d.Id == entity.TargetDatabaseId.Value);
+            dto.TargetDatabaseName = targetDb?.Name;
+        }
+
+        return dto;
     }
 
     public async Task BatchCreateAsync(BatchCreateDbFieldDto input)
@@ -132,9 +171,19 @@ public class DbFieldAppService :
         var order = maxSort;
         foreach (var field in input.Fields)
         {
+            if (field.TargetDatabaseId.HasValue)
+            {
+                var targetDbExists = await _targetDbRepo.AnyAsync(d => d.Id == field.TargetDatabaseId.Value);
+                if (!targetDbExists)
+                {
+                    throw new Volo.Abp.Validation.AbpValidationException("指定的目标数据库不存在");
+                }
+            }
+
             var entity = new DbField
             {
                 DbTableId = input.DbTableId,
+                TargetDatabaseId = field.TargetDatabaseId,
                 Name = field.Name,
                 SqlType = field.SqlType,
                 IsNullable = field.IsNullable,

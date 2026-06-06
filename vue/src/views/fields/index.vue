@@ -69,6 +69,26 @@
       row-key="key"
     >
       <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'targetDatabase'">
+          <template v-if="record.isNew || record.isEditing">
+            <a-select
+              v-model:value="record.targetDatabaseId"
+              style="width: 100%"
+              placeholder="选择目标数据库"
+              :allow-clear="true"
+              show-search
+              filter-option
+            >
+              <a-select-option v-for="db in databases" :key="db.id" :value="db.id">
+                {{ db.name }}
+              </a-select-option>
+            </a-select>
+          </template>
+          <template v-else>
+            {{ record.targetDatabaseName || '-' }}
+          </template>
+        </template>
+        
         <template v-if="column.key === 'name'">
           <template v-if="record.isNew || record.isEditing">
             <a-input v-model:value="record.name" placeholder="字段名" />
@@ -241,7 +261,7 @@ import {
   CheckOutlined, CloseOutlined, DownOutlined
 } from '@ant-design/icons-vue';
 import { dbFieldApi, type DbField, type GeneratedSqlResult, type FieldExecutionResult, type TableExecuteSqlResult } from '@/api/db-field';
-import { targetDatabaseApi } from '@/api/target-database';
+import { targetDatabaseApi, type TargetDatabase } from '@/api/target-database';
 import { dbTableApi } from '@/api/db-table';
 
 // SQL Server 常用数据类型
@@ -310,7 +330,7 @@ const editingRows = ref<Map<string, any>>(new Map());
 const selectedIds = ref<string[]>([]);
 const sqlResult = ref<GeneratedSqlResult>({ sqlScript: '', tableName: '', statements: [] });
 const execResults = ref<FieldExecutionResult[]>([]);
-const targetDatabaseId = ref<string>('');
+const databases = ref<TargetDatabase[]>([]);
 const createTableSqlVisible = ref(false);
 const createTableExecVisible = ref(false);
 const createTableSqlResult = ref<GeneratedSqlResult>({ sqlScript: '', tableName: '', statements: [] });
@@ -350,6 +370,7 @@ const tableData = computed<TableRow[]>(() => {
 });
 
 const columns = [
+  { title: '目标数据库', key: 'targetDatabase', width: 180 },
   { title: '字段名', dataIndex: 'name', key: 'name' },
   { title: 'SQL类型', dataIndex: 'sqlType', key: 'sqlType', width: 220 },
   { title: '允许NULL', key: 'isNullable', width: 100 },
@@ -418,6 +439,11 @@ function onPageChange(pag: any) {
   fetchData();
 }
 
+async function fetchDatabases() {
+  const res = await targetDatabaseApi.getList({ maxResultCount: 1000 });
+  databases.value = res.data.items;
+}
+
 function addNewRow() {
   const key = `new_${Date.now()}`;
   const maxSort = Math.max(...data.value.map(d => d.sortOrder), 0);
@@ -465,6 +491,7 @@ async function saveRow(record: TableRow) {
     if (record.isNew) {
       await dbFieldApi.create({
         dbTableId: tableId,
+        targetDatabaseId: record.targetDatabaseId || undefined,
         name: record.name!,
         sqlType: record.sqlType!,
         isNullable: record.isNullable ?? true,
@@ -476,6 +503,7 @@ async function saveRow(record: TableRow) {
       editingRows.value.delete(record.key);
     } else {
       await dbFieldApi.update(record.id!, {
+        targetDatabaseId: record.targetDatabaseId || undefined,
         name: record.name!,
         sqlType: record.sqlType!,
         isNullable: record.isNullable ?? true,
@@ -598,7 +626,10 @@ function formatDate(date: any) {
   return d.toISOString().slice(0, 10);
 }
 
-onMounted(fetchData);
+onMounted(async () => {
+  await fetchDatabases();
+  fetchData();
+});
 </script>
 
 <style scoped>

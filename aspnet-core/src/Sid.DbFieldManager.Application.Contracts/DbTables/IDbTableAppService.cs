@@ -13,5 +13,5 @@ public interface IDbTableAppService :
         CreateDbTableDto,
         UpdateDbTableDto>
 {
-    Task<ListResultDto<DbTableLookupDto>> GetLookupAsync(Guid? targetDatabaseId = null);
+    Task<ListResultDto<DbTableLookupDto>> GetLookupAsync();
 }

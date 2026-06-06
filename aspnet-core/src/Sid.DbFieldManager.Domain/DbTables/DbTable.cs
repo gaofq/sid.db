@@ -7,12 +7,10 @@ namespace Sid.DbFieldManager.DbTables;
 public class DbTable : FullAuditedAggregateRoot<Guid>
 {
     public DbTable() { }
-    public Guid? TargetDatabaseId { get; set; }
     public string Name { get; set; }
     public string DisplayName { get; set; }
     public string Schema { get; set; } = "dbo";
     public string Description { get; set; }
 
-    public TargetDatabases.TargetDatabase? TargetDatabase { get; set; }
     public ICollection<DbFields.DbField> Fields { get; set; }
 }

@@ -7,8 +7,6 @@ namespace Sid.DbFieldManager.DbTables;
 
 public class DbTableDto : FullAuditedEntityDto<Guid>
 {
-    public Guid? TargetDatabaseId { get; set; }
-    public string TargetDatabaseName { get; set; }
     public string Name { get; set; }
     public string DisplayName { get; set; }
     public string Schema { get; set; }
@@ -24,8 +22,6 @@ public class DbTableLookupDto : EntityDto<Guid>
 
 public class CreateDbTableDto
 {
-    public Guid? TargetDatabaseId { get; set; }
-
     [Required]
     [MaxLength(128)]
     public string Name { get; set; }
@@ -42,8 +38,6 @@ public class CreateDbTableDto
 
 public class UpdateDbTableDto
 {
-    public Guid? TargetDatabaseId { get; set; }
-
     [Required]
     [MaxLength(128)]
     public string Name { get; set; }
@@ -60,6 +54,5 @@ public class UpdateDbTableDto
 
 public class DbTableGetListInput : PagedAndSortedResultRequestDto
 {
-    public Guid? TargetDatabaseId { get; set; }
     public string? Filter { get; set; }
 }

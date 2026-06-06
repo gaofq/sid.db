@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Validation;
 
 namespace Sid.DbFieldManager.DbTables;
 
@@ -19,24 +18,14 @@ public class DbTableAppService :
         UpdateDbTableDto>,
     IDbTableAppService
 {
-    private readonly IRepository<TargetDatabases.TargetDatabase, Guid> _targetDbRepo;
-
-    public DbTableAppService(
-        IRepository<DbTable, Guid> repository,
-        IRepository<TargetDatabases.TargetDatabase, Guid> targetDbRepo)
+    public DbTableAppService(IRepository<DbTable, Guid> repository)
         : base(repository)
     {
-        _targetDbRepo = targetDbRepo;
     }
 
     protected override async Task<IQueryable<DbTable>> CreateFilteredQueryAsync(DbTableGetListInput input)
     {
         var query = await base.CreateFilteredQueryAsync(input);
-
-        if (input.TargetDatabaseId.HasValue)
-        {
-            query = query.Where(x => x.TargetDatabaseId == input.TargetDatabaseId.Value);
-        }
 
         if (!string.IsNullOrWhiteSpace(input.Filter))
         {
@@ -50,18 +39,8 @@ public class DbTableAppService :
 
     public override async Task<DbTableDto> CreateAsync(CreateDbTableDto input)
     {
-        if (input.TargetDatabaseId.HasValue)
-        {
-            var targetDbExists = await _targetDbRepo.AnyAsync(d => d.Id == input.TargetDatabaseId.Value);
-            if (!targetDbExists)
-            {
-                throw new AbpValidationException("指定的目标数据库不存在");
-            }
-        }
-
         var entity = new DbTable
         {
-            TargetDatabaseId = input.TargetDatabaseId,
             Name = input.Name,
             DisplayName = input.DisplayName,
             Schema = input.Schema,
@@ -74,17 +53,6 @@ public class DbTableAppService :
     public override async Task<DbTableDto> UpdateAsync(Guid id, UpdateDbTableDto input)
     {
         var entity = await Repository.GetAsync(id);
-
-        if (input.TargetDatabaseId.HasValue)
-        {
-            var targetDbExists = await _targetDbRepo.AnyAsync(d => d.Id == input.TargetDatabaseId.Value);
-            if (!targetDbExists)
-            {
-                throw new AbpValidationException("指定的目标数据库不存在");
-            }
-        }
-
-        entity.TargetDatabaseId = input.TargetDatabaseId;
         entity.Name = input.Name;
         entity.DisplayName = input.DisplayName;
         entity.Schema = input.Schema;
@@ -100,10 +68,9 @@ public class DbTableAppService :
 
     protected override async Task<DbTableDto> MapToGetOutputDtoAsync(DbTable entity)
     {
-        var dto = new DbTableDto
+        return new DbTableDto
         {
             Id = entity.Id,
-            TargetDatabaseId = entity.TargetDatabaseId,
             Name = entity.Name,
             DisplayName = entity.DisplayName,
             Schema = entity.Schema,
@@ -117,27 +84,11 @@ public class DbTableAppService :
             DeleterId = entity.DeleterId,
             IsDeleted = entity.IsDeleted
         };
-
-        if (entity.TargetDatabase != null)
-        {
-            dto.TargetDatabaseName = entity.TargetDatabase.Name;
-        }
-        else if (entity.TargetDatabaseId.HasValue)
-        {
-            var targetDb = await _targetDbRepo.FindAsync(d => d.Id == entity.TargetDatabaseId.Value);
-            dto.TargetDatabaseName = targetDb?.Name;
-        }
-
-        return dto;
     }
 
-    public async Task<ListResultDto<DbTableLookupDto>> GetLookupAsync(Guid? targetDatabaseId = null)
+    public async Task<ListResultDto<DbTableLookupDto>> GetLookupAsync()
     {
         var query = await Repository.GetQueryableAsync();
-        if (targetDatabaseId.HasValue)
-        {
-            query = query.Where(x => x.TargetDatabaseId == targetDatabaseId.Value);
-        }
         var items = query.ToList();
         return new ListResultDto<DbTableLookupDto>(
             items.Select(x => new DbTableLookupDto { Id = x.Id, Name = x.Name, DisplayName = x.DisplayName }).ToList());

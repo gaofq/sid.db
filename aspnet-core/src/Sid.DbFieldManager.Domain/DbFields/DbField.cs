@@ -7,6 +7,7 @@ public class DbField : FullAuditedEntity<Guid>
 {
     public DbField() { }
     public Guid DbTableId { get; set; }
+    public Guid? TargetDatabaseId { get; set; }
     public string Name { get; set; }
     public string SqlType { get; set; }
     public bool IsNullable { get; set; }
@@ -18,4 +19,5 @@ public class DbField : FullAuditedEntity<Guid>
     public DateTime? ExecutedAt { get; set; }
 
     public DbTables.DbTable DbTable { get; set; }
+    public TargetDatabases.TargetDatabase? TargetDatabase { get; set; }
 }

@@ -83,11 +83,6 @@ public class DbFieldManagerDbContext :
             b.Property(x => x.Name).IsRequired().HasMaxLength(128);
             b.Property(x => x.DisplayName).HasMaxLength(256);
             b.Property(x => x.Schema).HasMaxLength(128).HasDefaultValue("dbo");
-            b.HasOne(x => x.TargetDatabase)
-             .WithMany(x => x.Tables)
-             .HasForeignKey(x => x.TargetDatabaseId)
-             .IsRequired(false)
-             .OnDelete(DeleteBehavior.SetNull);
             b.HasMany(x => x.Fields)
              .WithOne(x => x.DbTable)
              .HasForeignKey(x => x.DbTableId)
@@ -103,6 +98,11 @@ public class DbFieldManagerDbContext :
             b.Property(x => x.DefaultValue).HasMaxLength(200);
             b.Property(x => x.Description).HasMaxLength(500);
             b.Property(x => x.ExecutionStatus).HasDefaultValue(ExecutionStatus.Pending);
+            b.HasOne(x => x.TargetDatabase)
+             .WithMany()
+             .HasForeignKey(x => x.TargetDatabaseId)
+             .IsRequired(false)
+             .OnDelete(DeleteBehavior.SetNull);
         });
 
         builder.Entity<SqlExecutionLog>(b =>
