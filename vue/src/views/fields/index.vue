@@ -509,19 +509,34 @@ async function previewSql() {
 }
 
 async function copySql() {
-  await navigator.clipboard.writeText(sqlResult.value.sqlScript);
-  message.success('已复制到剪贴板');
+  await copyToClipboard(sqlResult.value.sqlScript);
+}
+
+async function copyCreateTableSql() {
+  await copyToClipboard(createTableSqlResult.value.sqlScript);
+}
+
+async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    message.success('已复制到剪贴板');
+  } catch {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    message.success('已复制到剪贴板');
+  }
 }
 
 async function previewCreateTableSql() {
   const res = await dbFieldApi.previewCreateTableSql(tableId);
   createTableSqlResult.value = res.data;
   createTableSqlVisible.value = true;
-}
-
-async function copyCreateTableSql() {
-  await navigator.clipboard.writeText(createTableSqlResult.value.sqlScript);
-  message.success('已复制到剪贴板');
 }
 
 async function confirmCreateTable() {

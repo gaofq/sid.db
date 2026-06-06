@@ -64,6 +64,7 @@ public class DbTableAppService :
     public override async Task<DbTableDto> UpdateAsync(Guid id, UpdateDbTableDto input)
     {
         var entity = await Repository.GetAsync(id);
+        entity.TargetDatabaseId = input.TargetDatabaseId;
         entity.Name = input.Name;
         entity.DisplayName = input.DisplayName;
         entity.Schema = input.Schema;
