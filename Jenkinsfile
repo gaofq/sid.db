@@ -30,6 +30,18 @@ pipeline {
     }
     
     stages {
+        stage('Configure Git') {
+            steps {
+                echo '🔧 配置 Git...'
+                script {
+                    // 配置 Git 安全目录
+                    sh 'git config --global --add safe.directory "*"'
+                    sh 'git config --global user.name "Jenkins"'
+                    sh 'git config --global user.email "jenkins@example.com"'
+                }
+            }
+        }
+        
         stage('Check Environment') {
             steps {
                 echo '🔍 检查环境...'
@@ -63,15 +75,11 @@ pipeline {
             steps {
                 echo '🚀 拉取代码...'
                 script {
-                    try {
-                        checkout scm
-                    } catch (Exception e) {
-                        echo "⚠️ checkout scm 失败，尝试直接克隆仓库..."
-                        echo "错误信息: ${e.getMessage()}"
-                        sh 'rm -rf * .git 2>/dev/null || true'
-                        sh "git clone ${env.GIT_REPO_URL} ."
-                        sh "git checkout ${env.GIT_BRANCH}"
-                    }
+                    // 先清理目录
+                    sh 'rm -rf * .git 2>/dev/null || true'
+                    // 直接克隆仓库
+                    sh "git clone ${env.GIT_REPO_URL} ."
+                    sh "git checkout ${env.GIT_BRANCH}"
                     sh 'ls -la'
                 }
             }
