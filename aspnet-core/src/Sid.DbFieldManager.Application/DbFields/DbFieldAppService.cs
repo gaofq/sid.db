@@ -69,15 +69,6 @@ public class DbFieldAppService :
 
     public override async Task<DbFieldDto> CreateAsync(CreateDbFieldDto input)
     {
-        if (input.TargetDatabaseId.HasValue)
-        {
-            var targetDbExists = await _targetDbRepo.AnyAsync(d => d.Id == input.TargetDatabaseId.Value);
-            if (!targetDbExists)
-            {
-                throw new Volo.Abp.Validation.AbpValidationException("指定的目标数据库不存在");
-            }
-        }
-
         var entity = new DbField
         {
             DbTableId = input.DbTableId,
@@ -97,15 +88,6 @@ public class DbFieldAppService :
     public override async Task<DbFieldDto> UpdateAsync(Guid id, UpdateDbFieldDto input)
     {
         var entity = await Repository.GetAsync(id);
-
-        if (input.TargetDatabaseId.HasValue)
-        {
-            var targetDbExists = await _targetDbRepo.AnyAsync(d => d.Id == input.TargetDatabaseId.Value);
-            if (!targetDbExists)
-            {
-                throw new Volo.Abp.Validation.AbpValidationException("指定的目标数据库不存在");
-            }
-        }
 
         entity.TargetDatabaseId = input.TargetDatabaseId;
         entity.Name = input.Name;
@@ -149,11 +131,7 @@ public class DbFieldAppService :
             IsDeleted = entity.IsDeleted
         };
 
-        if (entity.TargetDatabase != null)
-        {
-            dto.TargetDatabaseName = entity.TargetDatabase.Name;
-        }
-        else if (entity.TargetDatabaseId.HasValue)
+        if (entity.TargetDatabaseId.HasValue)
         {
             var targetDb = await _targetDbRepo.FindAsync(d => d.Id == entity.TargetDatabaseId.Value);
             dto.TargetDatabaseName = targetDb?.Name;
@@ -171,15 +149,6 @@ public class DbFieldAppService :
         var order = maxSort;
         foreach (var field in input.Fields)
         {
-            if (field.TargetDatabaseId.HasValue)
-            {
-                var targetDbExists = await _targetDbRepo.AnyAsync(d => d.Id == field.TargetDatabaseId.Value);
-                if (!targetDbExists)
-                {
-                    throw new Volo.Abp.Validation.AbpValidationException("指定的目标数据库不存在");
-                }
-            }
-
             var entity = new DbField
             {
                 DbTableId = input.DbTableId,

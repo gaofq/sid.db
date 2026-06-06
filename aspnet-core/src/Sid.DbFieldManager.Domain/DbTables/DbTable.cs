@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Sid.DbFieldManager.DbTables;
@@ -11,6 +10,4 @@ public class DbTable : FullAuditedAggregateRoot<Guid>
     public string DisplayName { get; set; }
     public string Schema { get; set; } = "dbo";
     public string Description { get; set; }
-
-    public ICollection<DbFields.DbField> Fields { get; set; }
 }

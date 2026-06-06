@@ -17,7 +17,4 @@ public class DbField : FullAuditedEntity<Guid>
     public int SortOrder { get; set; }
     public ExecutionStatus ExecutionStatus { get; set; } = ExecutionStatus.Pending;
     public DateTime? ExecutedAt { get; set; }
-
-    public DbTables.DbTable DbTable { get; set; }
-    public TargetDatabases.TargetDatabase? TargetDatabase { get; set; }
 }
