@@ -32,11 +32,11 @@ services:
       # 数据库连接字符串：直接用docker内部服务名sqlserver访问数据库，不需要填IP
       - ConnectionStrings__Default=Server=sqlserver,1433;Database=DbFieldManager;User Id=sa;Password=Fkh6G2B4s73N@2024;Encrypt=Optional;TrustServerCertificate=true;
       # 后端服务自身访问地址，用于生成链接和跨域校验
-      - App__SelfUrl=http://localhost:8090
+      - App__SelfUrl=http://192.168.1.230:8090
       # 允许跨域的前端地址，多个地址用逗号分隔，比如http://localhost:8091,https://your-domain.com
-      - App__CorsOrigins=http://localhost:8091
+      - App__CorsOrigins=http://localhost:8091,http://192.168.1.230:8091
       # OpenIddict认证服务地址，和后端地址一致
-      - AuthServer__Authority=http://localhost:8090
+      - AuthServer__Authority=http://192.168.1.230:8090
       # 开发/测试环境关闭HTTPS元数据校验，生产环境如果用HTTPS需要改成true
       - AuthServer__RequireHttpsMetadata=false
       # 字符串加密默认密钥，建议生产环境自定义，支持从.env文件读取STRING_ENCRYPT_PASSPHRASE变量
