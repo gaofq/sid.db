@@ -122,9 +122,9 @@ public class DbTableAppService :
         {
             dto.TargetDatabaseName = entity.TargetDatabase.Name;
         }
-        else
+        else if (entity.TargetDatabaseId.HasValue)
         {
-            var targetDb = await _targetDbRepo.FindAsync(entity.TargetDatabaseId);
+            var targetDb = await _targetDbRepo.FindAsync(d => d.Id == entity.TargetDatabaseId.Value);
             dto.TargetDatabaseName = targetDb?.Name;
         }
 
