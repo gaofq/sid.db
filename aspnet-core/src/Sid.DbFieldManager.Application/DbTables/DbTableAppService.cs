@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Validation;
 
 namespace Sid.DbFieldManager.DbTables;
 
@@ -49,6 +50,15 @@ public class DbTableAppService :
 
     public override async Task<DbTableDto> CreateAsync(CreateDbTableDto input)
     {
+        if (input.TargetDatabaseId.HasValue)
+        {
+            var targetDbExists = await _targetDbRepo.AnyAsync(d => d.Id == input.TargetDatabaseId.Value);
+            if (!targetDbExists)
+            {
+                throw new AbpValidationException("指定的目标数据库不存在");
+            }
+        }
+
         var entity = new DbTable
         {
             TargetDatabaseId = input.TargetDatabaseId,
@@ -64,6 +74,16 @@ public class DbTableAppService :
     public override async Task<DbTableDto> UpdateAsync(Guid id, UpdateDbTableDto input)
     {
         var entity = await Repository.GetAsync(id);
+
+        if (input.TargetDatabaseId.HasValue)
+        {
+            var targetDbExists = await _targetDbRepo.AnyAsync(d => d.Id == input.TargetDatabaseId.Value);
+            if (!targetDbExists)
+            {
+                throw new AbpValidationException("指定的目标数据库不存在");
+            }
+        }
+
         entity.TargetDatabaseId = input.TargetDatabaseId;
         entity.Name = input.Name;
         entity.DisplayName = input.DisplayName;
