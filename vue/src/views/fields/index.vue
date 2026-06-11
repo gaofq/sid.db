@@ -338,12 +338,15 @@ const createTableExecResult = ref<TableExecuteSqlResult | null>(null);
 const dateRange = ref<any>(null);
 const modifyDateRange = ref<any>(null);
 const pagination = reactive({ current: 1, pageSize: 20, total: 0 });
+const targetDatabaseId = ref<string | null>(null);
 
 interface TableRow extends Partial<DbField> {
   key: string;
   isNew?: boolean;
   isEditing?: boolean;
   originalData?: Partial<DbField>;
+  targetDatabaseId?: string | null;
+  targetDatabaseName?: string;
 }
 
 const tableData = computed<TableRow[]>(() => {

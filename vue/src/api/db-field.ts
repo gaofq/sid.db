@@ -15,6 +15,8 @@ export interface DbField {
   executedAt?: string;
   creationTime: string;
   lastModificationTime?: string;
+  targetDatabaseId?: string;
+  targetDatabaseName?: string;
 }
 
 export interface GeneratedSqlResult {
