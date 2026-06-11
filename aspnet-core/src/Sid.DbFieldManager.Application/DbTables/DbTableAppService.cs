@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Sid.DbFieldManager.DbFields;
 
 namespace Sid.DbFieldManager.DbTables;
 
@@ -18,9 +19,14 @@ public class DbTableAppService :
         UpdateDbTableDto>,
     IDbTableAppService
 {
-    public DbTableAppService(IRepository<DbTable, Guid> repository)
+    private readonly IRepository<DbField, Guid> _dbFieldRepository;
+
+    public DbTableAppService(
+        IRepository<DbTable, Guid> repository,
+        IRepository<DbField, Guid> dbFieldRepository)
         : base(repository)
     {
+        _dbFieldRepository = dbFieldRepository;
     }
 
     protected override async Task<IQueryable<DbTable>> CreateFilteredQueryAsync(DbTableGetListInput input)
@@ -68,6 +74,8 @@ public class DbTableAppService :
 
     protected override async Task<DbTableDto> MapToGetOutputDtoAsync(DbTable entity)
     {
+        var fieldCount = await _dbFieldRepository.CountAsync(f => f.DbTableId == entity.Id);
+
         return new DbTableDto
         {
             Id = entity.Id,
@@ -75,7 +83,7 @@ public class DbTableAppService :
             DisplayName = entity.DisplayName,
             Schema = entity.Schema,
             Description = entity.Description,
-            FieldCount = entity.Fields?.Count ?? 0,
+            FieldCount = fieldCount,
             CreationTime = entity.CreationTime,
             CreatorId = entity.CreatorId,
             LastModificationTime = entity.LastModificationTime,
