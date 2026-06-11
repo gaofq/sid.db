@@ -345,8 +345,6 @@ interface TableRow extends Partial<DbField> {
   isNew?: boolean;
   isEditing?: boolean;
   originalData?: Partial<DbField>;
-  targetDatabaseId?: string | null;
-  targetDatabaseName?: string;
 }
 
 const tableData = computed<TableRow[]>(() => {
@@ -583,7 +581,7 @@ async function confirmCreateTable() {
 
 async function handleCreateTable() {
   try {
-    const res = await dbFieldApi.executeCreateTableSql(tableId, targetDatabaseId.value);
+    const res = await dbFieldApi.executeCreateTableSql(tableId, targetDatabaseId.value || '');
     createTableExecResult.value = res.data;
     createTableExecVisible.value = true;
   } catch (e: any) {
@@ -593,7 +591,7 @@ async function handleCreateTable() {
 
 async function confirmExecute() {
   try {
-    const res = await dbFieldApi.executeSql(targetDatabaseId.value, selectedIds.value);
+    const res = await dbFieldApi.executeSql(targetDatabaseId.value || '', selectedIds.value);
     execResults.value = res.data.results;
     execResultVisible.value = true;
     fetchData(); // refresh status

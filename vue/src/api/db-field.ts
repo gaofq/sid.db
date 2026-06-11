@@ -15,7 +15,7 @@ export interface DbField {
   executedAt?: string;
   creationTime: string;
   lastModificationTime?: string;
-  targetDatabaseId?: string;
+  targetDatabaseId?: string | null;
   targetDatabaseName?: string;
 }
 
