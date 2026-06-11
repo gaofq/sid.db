@@ -2,8 +2,6 @@ import api from './index';
 
 export interface DbTable {
   id: string;
-  targetDatabaseId: string;
-  targetDatabaseName: string;
   name: string;
   displayName: string;
   schema: string;

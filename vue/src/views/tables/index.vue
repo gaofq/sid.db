@@ -2,19 +2,6 @@
   <div>
     <div style="margin-bottom: 16px; display: flex; justify-content: space-between">
       <a-space>
-        <a-select
-          v-model:value="filterDbId"
-          placeholder="筛选目标数据库"
-          style="width: 250px"
-          allow-clear
-          @change="fetchData"
-        >
-          <a-select-option
-            v-for="db in databases"
-            :key="db.id"
-            :value="db.id"
-          >{{ db.name }}</a-select-option>
-        </a-select>
         <a-input-search
           v-model:value="search"
           placeholder="搜索表名..."
@@ -57,15 +44,6 @@
       :confirm-loading="saving"
     >
       <a-form :model="form" layout="vertical">
-        <a-form-item label="目标数据库" required>
-          <a-select v-model:value="form.targetDatabaseId" placeholder="选择数据库">
-            <a-select-option
-              v-for="db in databases"
-              :key="db.id"
-              :value="db.id"
-            >{{ db.name }}</a-select-option>
-          </a-select>
-        </a-form-item>
         <a-form-item label="表名" required>
           <a-input v-model:value="form.name" placeholder="如: mporder" />
         </a-form-item>
@@ -88,20 +66,16 @@ import { ref, reactive, onMounted } from 'vue';
 import { message } from 'ant-design-vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import { dbTableApi, type DbTable } from '@/api/db-table';
-import { targetDatabaseApi, type TargetDatabase } from '@/api/target-database';
 
 const search = ref('');
-const filterDbId = ref<string | undefined>();
 const loading = ref(false);
 const saving = ref(false);
 const modalVisible = ref(false);
 const editingId = ref<string | null>(null);
 const data = ref<DbTable[]>([]);
-const databases = ref<TargetDatabase[]>([]);
 const pagination = reactive({ current: 1, pageSize: 10, total: 0 });
 
 const form = reactive({
-  targetDatabaseId: undefined as string | undefined,
   name: '',
   displayName: '',
   schema: 'dbo',
@@ -113,20 +87,13 @@ const columns = [
   { title: '显示名称', dataIndex: 'displayName', key: 'displayName' },
   { title: 'Schema', dataIndex: 'schema', key: 'schema' },
   { title: '字段数', dataIndex: 'fieldCount', key: 'fieldCount', width: 100 },
-  { title: '数据库', dataIndex: 'targetDatabaseName', key: 'targetDatabaseName' },
   { title: '操作', key: 'actions', width: 260 },
 ];
-
-async function fetchDatabases() {
-  const res = await targetDatabaseApi.getList({ maxResultCount: 1000 });
-  databases.value = res.data.items;
-}
 
 async function fetchData() {
   loading.value = true;
   try {
     const res = await dbTableApi.getList({
-      targetDatabaseId: filterDbId.value,
       filter: search.value || undefined,
       maxResultCount: pagination.pageSize,
       skipCount: (pagination.current - 1) * pagination.pageSize,
@@ -146,7 +113,6 @@ function onPageChange(pag: any) {
 
 function openCreate() {
   editingId.value = null;
-  form.targetDatabaseId = undefined;
   form.name = '';
   form.displayName = '';
   form.schema = 'dbo';
@@ -156,7 +122,6 @@ function openCreate() {
 
 function openEdit(record: DbTable) {
   editingId.value = record.id;
-  form.targetDatabaseId = record.targetDatabaseId;
   form.name = record.name;
   form.displayName = record.displayName;
   form.schema = record.schema;
@@ -169,7 +134,6 @@ async function handleSave() {
   try {
     if (editingId.value) {
       await dbTableApi.update(editingId.value, {
-        targetDatabaseId: form.targetDatabaseId ? form.targetDatabaseId : null,
         name: form.name,
         displayName: form.displayName,
         schema: form.schema,
@@ -194,7 +158,6 @@ async function handleDelete(id: string) {
 }
 
 onMounted(async () => {
-  await fetchDatabases();
   fetchData();
 });
 </script>
