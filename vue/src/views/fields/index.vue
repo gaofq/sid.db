@@ -79,27 +79,6 @@
       row-key="key"
     >
       <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'targetDatabase'">
-          <template v-if="record.isNew || record.isEditing">
-            <a-select
-              v-model:value="record.targetDatabaseId"
-              style="width: 100%"
-              placeholder="选择目标数据库"
-              :allow-clear="true"
-              show-search
-              filter-option
-              @change="onFieldDbChange"
-            >
-              <a-select-option v-for="db in databases" :key="db.id" :value="db.id">
-                {{ db.name }}
-              </a-select-option>
-            </a-select>
-          </template>
-          <template v-else>
-            {{ record.targetDatabaseName || '-' }}
-          </template>
-        </template>
-        
         <template v-if="column.key === 'name'">
           <template v-if="record.isNew || record.isEditing">
             <a-input v-model:value="record.name" placeholder="字段名" />
@@ -382,7 +361,6 @@ const tableData = computed<TableRow[]>(() => {
 });
 
 const columns = [
-  { title: '目标数据库', key: 'targetDatabase', width: 180 },
   { title: '字段名', dataIndex: 'name', key: 'name' },
   { title: 'SQL类型', dataIndex: 'sqlType', key: 'sqlType', width: 220 },
   { title: '允许NULL', key: 'isNullable', width: 100 },
@@ -453,10 +431,6 @@ async function fetchDatabases() {
   databases.value = res.data.items;
 }
 
-function onFieldDbChange(val: string) {
-  if (val) targetDatabaseId.value = val;
-}
-
 function addNewRow() {
   const key = `new_${Date.now()}`;
   const maxSort = Math.max(...data.value.map(d => d.sortOrder), 0);
@@ -504,7 +478,7 @@ async function saveRow(record: TableRow) {
     if (record.isNew) {
       await dbFieldApi.create({
         dbTableId: tableId,
-        targetDatabaseId: record.targetDatabaseId || undefined,
+        targetDatabaseId: targetDatabaseId.value || undefined,
         name: record.name!,
         sqlType: record.sqlType!,
         isNullable: record.isNullable ?? true,
@@ -516,7 +490,7 @@ async function saveRow(record: TableRow) {
       editingRows.value.delete(record.key);
     } else {
       await dbFieldApi.update(record.id!, {
-        targetDatabaseId: record.targetDatabaseId || undefined,
+        targetDatabaseId: targetDatabaseId.value || undefined,
         name: record.name!,
         sqlType: record.sqlType!,
         isNullable: record.isNullable ?? true,
