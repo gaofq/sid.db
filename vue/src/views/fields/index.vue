@@ -580,8 +580,12 @@ async function confirmCreateTable() {
 }
 
 async function handleCreateTable() {
+  if (!targetDatabaseId.value) {
+    message.warning('请先选择目标数据库');
+    return;
+  }
   try {
-    const res = await dbFieldApi.executeCreateTableSql(tableId, targetDatabaseId.value || '');
+    const res = await dbFieldApi.executeCreateTableSql(tableId, targetDatabaseId.value);
     createTableExecResult.value = res.data;
     createTableExecVisible.value = true;
   } catch (e: any) {
@@ -590,8 +594,16 @@ async function handleCreateTable() {
 }
 
 async function confirmExecute() {
+  if (!targetDatabaseId.value) {
+    message.warning('请先选择目标数据库');
+    return;
+  }
+  if (selectedIds.value.length === 0) {
+    message.warning('请先选择要执行的字段');
+    return;
+  }
   try {
-    const res = await dbFieldApi.executeSql(targetDatabaseId.value || '', selectedIds.value);
+    const res = await dbFieldApi.executeSql(targetDatabaseId.value, selectedIds.value);
     execResults.value = res.data.results;
     execResultVisible.value = true;
     fetchData(); // refresh status

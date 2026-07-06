@@ -1,12 +1,7 @@
 pipeline {
     agent any
     
-    // Git 仓库：https://github.com/gaofq/sid.db.git
-    // 服务器源码目录：/www/wwwroot/gaofq/sid.db/
-    
-    options {
-        skipDefaultCheckout()  // 跳过 SCM 自动 checkout，我们自己控制
-    }
+    // 源码目录已挂载：/www/wwwroot/gaofq/sid.db -> /var/jenkins_home/workspace/sid.db
     
     parameters {
         choice(
@@ -19,51 +14,15 @@ pipeline {
             defaultValue: true,
             description: '是否强制重新构建镜像'
         )
-        booleanParam(
-            name: 'RUN_TESTS',
-            defaultValue: false,
-            description: '是否运行单元测试'
-        )
-    }
-    
-    environment {
-        GIT_BRANCH = 'main'
-        GIT_REPO_URL = 'https://github.com/gaofq/sid.db.git'
     }
     
     stages {
-        stage('Configure Git') {
-            steps {
-                echo '🔧 配置 Git 安全目录...'
-                sh 'git config --global --add safe.directory "*"'
-            }
-        }
-        
-        stage('Checkout') {
-            steps {
-                echo '� 拉取代码...'
-                sh "git clone --branch ${env.GIT_BRANCH} ${env.GIT_REPO_URL} ."
-                sh 'ls -la'
-            }
-        }
-        
         stage('Check Environment') {
             steps {
                 echo '🔍 检查环境...'
-                script {
-                    sh 'docker --version'
-                    sh 'docker compose version || docker-compose --version || true'
-                }
-            }
-        }
-        
-        stage('Run Tests') {
-            when { expression { params.RUN_TESTS == true } }
-            steps {
-                echo '🧪 运行单元测试...'
-                dir('aspnet-core') {
-                    sh 'dotnet test || true'
-                }
+                sh 'docker --version'
+                sh 'docker compose version || true'
+                sh 'ls -la'
             }
         }
         
@@ -105,7 +64,6 @@ pipeline {
             steps {
                 echo '🔍 验证部署...'
                 sh 'docker compose ps'
-                echo '⏳ 等待服务启动...'
                 sleep 30
                 sh 'docker compose logs --tail=50'
             }
@@ -119,18 +77,7 @@ pipeline {
         }
         failure {
             echo '❌ 部署失败！'
-            script {
-                sh 'ls -la'
-                try {
-                    sh 'docker ps -a'
-                    sh 'docker compose logs --tail=100 2>/dev/null || true'
-                } catch (Exception e) {
-                    echo "获取日志失败: ${e.getMessage()}"
-                }
-            }
-        }
-        always {
-            echo '🎉 Pipeline 执行完成'
+            sh 'docker compose logs --tail=100 2>/dev/null || true'
         }
     }
 }
