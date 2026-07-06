@@ -3,6 +3,16 @@
     <a-page-header title="字段管理" @back="() => $router.back()">
       <template #extra>
         <a-space>
+          <a-select
+            v-model:value="targetDatabaseId"
+            placeholder="选择目标数据库"
+            style="width: 200px"
+            allow-clear
+          >
+            <a-select-option v-for="db in databases" :key="db.id" :value="db.id">
+              {{ db.name }}
+            </a-select-option>
+          </a-select>
           <a-button type="primary" @click="addNewRow">
             <plus-outlined /> 添加字段
           </a-button>
@@ -403,9 +413,6 @@ const rowSelection = {
 async function fetchData() {
   loading.value = true;
   try {
-    const table = await dbTableApi.get(tableId);
-    targetDatabaseId.value = table.data.targetDatabaseId;
-
     const params: any = {
       dbTableId: tableId,
       maxResultCount: pagination.pageSize,
