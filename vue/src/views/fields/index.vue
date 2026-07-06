@@ -88,6 +88,7 @@
               :allow-clear="true"
               show-search
               filter-option
+              @change="(val: string) => { if (val) targetDatabaseId.value = val; }"
             >
               <a-select-option v-for="db in databases" :key="db.id" :value="db.id">
                 {{ db.name }}
