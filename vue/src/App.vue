@@ -14,10 +14,6 @@
         mode="inline"
         @click="onMenuClick"
       >
-        <a-menu-item key="/databases">
-          <database-outlined />
-          <span>目标数据库</span>
-        </a-menu-item>
         <a-menu-item key="/tables">
           <table-outlined />
           <span>数据表管理</span>
@@ -25,6 +21,10 @@
         <a-menu-item key="/execution-logs">
           <history-outlined />
           <span>执行日志</span>
+        </a-menu-item>
+        <a-menu-item key="/databases">
+          <database-outlined />
+          <span>目标数据库</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>

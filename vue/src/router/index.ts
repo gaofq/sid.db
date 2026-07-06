@@ -10,7 +10,7 @@ const routes = [
   },
   {
     path: '/',
-    redirect: '/databases',
+    redirect: '/tables',
   },
   {
     path: '/databases',
