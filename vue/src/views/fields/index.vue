@@ -88,7 +88,7 @@
               :allow-clear="true"
               show-search
               filter-option
-              @change="(val: string) => { if (val) targetDatabaseId.value = val; }"
+              @change="onFieldDbChange"
             >
               <a-select-option v-for="db in databases" :key="db.id" :value="db.id">
                 {{ db.name }}
@@ -451,6 +451,10 @@ function onPageChange(pag: any) {
 async function fetchDatabases() {
   const res = await targetDatabaseApi.getList({ maxResultCount: 1000 });
   databases.value = res.data.items;
+}
+
+function onFieldDbChange(val: string) {
+  if (val) targetDatabaseId.value = val;
 }
 
 function addNewRow() {
